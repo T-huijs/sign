@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hui.mapper.StudentMapper">
+    <resultMap id="studentMapper" type="com.hui.model.entity.Student">
+        <result column="std_no" jdbcType="VARCHAR" property="studentNo"/>
+        <result column="std_name" jdbcType="VARCHAR" property="name"/>
+        <result column="sex" jdbcType="CHAR" property="sex"/>
+        <result column="age" jdbcType="VARCHAR" property="age"/>
+        <result column="class_no" jdbcType="VARCHAR" property="classNo"/>
+        <result column="telphone" jdbcType="VARCHAR" property="telPhone"/>
+    </resultMap>
+
+    <insert id="addStudent" parameterType="com.hui.model.entity.Student">
+        INSERT INTO si_student (
+            std_no,
+            std_name,
+            sex,
+            age,
+            class_no,
+            telphone,
+            create_by,
+            create_date,
+            update_by,
+            update_date
+        ) VALUES (
+            #{studentNo,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{sex,jdbcType=CHAR},
+            #{age,jdbcType=INTEGER},
+            #{classNo,jdbcType=VARCHAR},
+            #{telPhone,jdbcType=VARCHAR},
+            #{createBy,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=TIMESTAMP}
+        )
+
+    </insert>
+
+    <update id="updateStudent" parameterType="com.hui.model.entity.Student">
+        UPDATE si_student
+        SET
+        <if test="name != null and name != ''">
+            std_name = #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="sex != null and sex != ''">
+            sex = #{sex,jdbcType=CHAR},
+        </if>
+        <if test="age != null and age != 0">
+            age = #{age,jdbcType=INTEGER},
+        </if>
+        <if test="telPhone != null and telPhone != ''">
+            telphone = #{telPhone,jdbcType=VARCHAR},
+        </if>
+        <if test="classNo != null and classNo != ''">
+            class_no = #{classNo,jdbcType=VARCHAR},
+        </if>
+        <if test="studentNo != null and studentNo != ''">
+            update_by = #{studentNo,jdbcType=VARCHAR},
+        </if>
+            update_date = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE
+            std_no = #{studentNo,jdbcType=VARCHAR}
+    </update>
+
+    <select id="queryStudent" parameterType="java.lang.String" resultMap="studentMapper">
+        SELECT
+            ss.std_no,
+            ss.std_name,
+            ss.age,
+            ss.sex,
+            ss.class_no
+        FROM
+            si_student ss
+        WHERE
+            ss.std_no = #{studentNo,jdbcType=VARCHAR}
+        LIMIT 1;
+    </select>
+
+    <delete id="deleteStudent" parameterType="java.lang.String">
+        DELETE FROM si_student ss WHERE ss.std_no = #{studentNo,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="queryStudentCountByTeacherNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            si_student_rel_course src
+        WHERE
+            src.student_no = #{studentNo,jdbcType=VARCHAR}
+            AND src.course_no IN (
+                SELECT
+                    sc.course_no
+                FROM
+                    si_course sc
+                WHERE
+                    sc.teacher_no = #{teacherNo,jdbcType=VARCHAR}
+            )
+    </select>
+
+
+
+
+</mapper>

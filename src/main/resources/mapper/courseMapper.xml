@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hui.mapper.CourseMapper">
+
+    <resultMap id="courseMap" type="com.hui.model.entity.Course">
+        <result column="course_no" jdbcType="VARCHAR" property="courseNo"/>
+        <result column="course_name" jdbcType="VARCHAR" property="courseName"/>
+        <result column="course_desc" jdbcType="VARCHAR" property="courseDesc"/>
+        <result column="teacher_no" jdbcType="VARCHAR" property="teacherNo"/>
+        <result column="up_time" jdbcType="TIMESTAMP" property="upTime"/>
+        <result column="down_time" jdbcType="TIMESTAMP" property="downTime"/>
+    </resultMap>
+
+    <update id="updateCourse" parameterType="com.hui.model.entity.Course">
+        UPDATE si_course
+        SET
+        <if test="courseName != null and courseName != ''">
+            course_name = #{courseName,jdbcType=VARCHAR},
+        </if>
+        <if test="courseDesc != null and courseDesc != ''">
+            course_desc = #{courseDesc,jdbcType=VARCHAR},
+        </if>
+        <if test="teacherNo != null and teacherNo != ''">
+            teacher_no = #{teacherNo,jdbcType=VARCHAR},
+        </if>
+        <if test="upTime != null">
+            up_time = #{upTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="downTime != null">
+            down_time = #{downTime,jdbcType=TIMESTAMP},
+        </if>
+            update_by = #{updateBy,jdbcType=VARCHAR},
+            update_date = sysdate()
+        WHERE
+            course_no = #{courseNo,jdbcType=VARCHAR}
+    </update>
+
+    <insert id="addCourse" parameterType="com.hui.model.entity.Course">
+        INSERT INTO si_course (
+            course_no,
+            course_name,
+            course_desc,
+            teacher_no,
+            up_time,
+            down_time,
+            create_by,
+            create_date,
+            update_by,
+            update_date
+        ) VALUES (
+            #{courseNo,jdbcType=VARCHAR},
+            #{courseName,jdbcType=VARCHAR},
+            #{courseDesc,jdbcType=VARCHAR},
+            #{teacherNo,jdbcType=VARCHAR},
+            #{upTime,jdbcType=TIMESTAMP},
+            #{downTime,jdbcType=TIMESTAMP},
+            #{createBy,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=TIMESTAMP}
+        )
+
+    </insert>
+
+    <delete id="deleteCourse" parameterType="java.lang.String">
+        DELETE FROM
+            si_course sc
+        WHERE
+            sc.course_no = #{courseNo,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="queryCourse" parameterType="java.lang.String" resultMap="courseMap">
+        SELECT
+            sc.course_no,
+            sc.course_name,
+            sc.course_desc,
+            sc.teacher_no,
+            sc.up_time,
+            sc.down_time
+        FROM
+            si_course sc
+        WHERE
+            sc.course_no = #{courseNo,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="bindStudent" parameterType="com.hui.model.form.BindCourseForm">
+        INSERT INTO si_student_rel_course (
+            student_no,
+            course_no,
+            create_date,
+            create_by,
+            update_date,
+            update_by
+        ) VALUES (
+            #{studentNo,jdbcType=VARCHAR},
+            #{courseNo,jdbcType=VARCHAR},
+            sysdate(),
+            'system',
+            sysdate(),
+            'system'
+        )
+    </insert>
+
+    <select id="queryCourseListByTeacherNo" parameterType="java.lang.String" resultMap="courseMap">
+        SELECT
+            sc.course_no,
+            sc.course_desc,
+            sc.course_name
+            sc.teacher_no,
+            sc.down_time,
+            sc.up_time
+        FROM
+            si_course sc
+        WHERE
+            sc.teacher_no = #{teacherNo,jdbcType=VARCHAR}
+    </select>
+
+    <select id="queryCourseListByStudentNo" parameterType="java.lang.String" resultMap="courseMap">
+        SELECT
+            sc.course_no,
+            sc.course_name,
+            sc.course_desc,
+            sc.up_time,
+            sc.down_time,
+            sc.teacher_no
+        FROM
+            si_course sc
+        WHERE
+            sc.course_no IN (
+                SELECT
+                    src.course_no
+                FROM
+                    si_student_rel_course src
+                WHERE
+                    src.student_no = #{studentNo,jdbcType=VARCHAR}
+            )
+    </select>
+</mapper>

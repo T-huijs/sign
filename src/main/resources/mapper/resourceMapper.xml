@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hui.mapper.ResourceMapper">
+    <select id="queryUrl" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            sr.url
+        FROM
+            si_resource sr
+        WHERE
+            sr.resource_id IN (
+                SELECT
+                    srr.resource_id
+                FROM
+                    si_role_rel_resource srr
+                WHERE
+                    srr.role_id = #{roleId,jdbcType=VARCHAR}
+            )
+    </select>
+
+</mapper>

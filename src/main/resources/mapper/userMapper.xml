@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hui.mapper.UserMapper">
+
+    <select id="queryCountByAccount" parameterType="com.hui.model.form.RegisterForm" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            si_user su
+        WHERE
+            su.account = #{account, jdbcType = VARCHAR}
+        AND su.user_no = #{userNo,jdbcType=VARCHAR}
+        AND su.role_id = #{roleId, jdbcType = VARCHAR}
+        AND su.is_use = 0
+    </select>
+    <insert id="addUser" parameterType="com.hui.model.entity.User">
+        INSERT INTO si_user (
+            account,
+            password,
+            user_no,
+            role_id,
+            is_use,
+            creat_by,
+            creat_date,
+            update_by,
+            update_date
+        )
+        VALUES(
+            #{account, jdbcType = VARCHAR},
+            #{password, jdbcType = VARCHAR},
+            #{userNo,jdbcType=VARCHAR},
+            #{roleId, jdbcType = VARCHAR},
+            #{isUse,jdbcType = VARCHAR},
+            #{createBy, jdbcType = VARCHAR},
+            #{createTime, jdbcType=TIMESTAMP},
+            #{updateBy, jdbcType = VARCHAR},
+            #{updateTime, jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="getUserByAccount" parameterType="com.hui.model.form.LoginForm" resultType="com.hui.model.json.LoginJson">
+        SELECT
+            su.user_no as userNo,
+            su.role_id as roleId
+        FROM
+            si_user su
+        WHERE
+            su.account = #{account, jdbcType = VARCHAR}
+        AND su.password = #{password, jdbcType = VARCHAR}
+        AND su.role_id = #{roleId, jdbcType = VARCHAR}
+        AND su.is_use = '0'
+    </select>
+
+</mapper>

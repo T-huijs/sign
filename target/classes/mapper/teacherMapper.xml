@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hui.mapper.TeacherMapper">
+
+    <resultMap id="teacherMap" type="com.hui.model.entity.Teacher">
+        <result column="th_no" jdbcType="VARCHAR" property="teacherNo"/>
+        <result column="th_name" jdbcType="VARCHAR" property="name"/>
+        <result column="sex" jdbcType="CHAR" property="sex"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <result column="telphone" jdbcType="VARCHAR" property="telPhone"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+    </resultMap>
+    <insert id="addTeacher" parameterType="com.hui.model.entity.Teacher">
+        INSERT INTO si_teacher (
+            th_no,
+            th_name,
+            sex,
+            age,
+            telphone,
+            email,
+            create_by,
+            create_date,
+            update_by,
+            update_date
+        ) VALUES (
+            #{teacherNo,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{sex,jdbcType=VARCHAR},
+            #{age,jdbcType=INTEGER},
+            #{telPhone,jdbcType=VARCHAR},
+            #{email,jdbcType=VARCHAR},
+            #{createBy,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <update id="updateTeacher" parameterType="com.hui.model.form.UpdateTeacherForm">
+        UPDATE si_teacher
+        SET
+            <if test="name != null and name != ''">
+                th_name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null and age != 0">
+                age = #{age,jdbcType=INTEGER},
+            </if>
+            <if test="telPhone != null and telPhone != ''">
+                telphone = #{telPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            update_date = sysdate()
+        WHERE
+            th_no = #{teacherNo,jdbcType=VARCHAR}
+    </update>
+    <select id="queryTeacher" parameterType="java.lang.String" resultMap="teacherMap">
+        SELECT
+            st.th_no,
+            st.th_name,
+            CASE st.sex
+            WHEN '0' THEN
+                '女'
+            WHEN 1 THEN
+                '男'
+            ELSE
+                '其他'
+            END as sex,
+            st.age,
+            st.email,
+            st.telphone
+        FROM
+            si_teacher st
+        WHERE st.th_no = #{teacherNo,jdbcType=VARCHAR}
+        LIMIT 1;
+    </select>
+    <delete id="deleteTeacher" parameterType="java.lang.String">
+        DELETE
+        FROM
+            si_teacher
+        WHERE
+            th_no = #{teacherNo,jdbcType=VARCHAR}
+    </delete>
+
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hui.mapper.SignMapper">
+
+    <resultMap id="signRecordMap" type="com.hui.model.entity.Sign">
+        <result column="course_no" jdbcType="VARCHAR" property="courseNo"/>
+        <result column="sign_time" jdbcType="TIMESTAMP" property="signTime"/>
+        <result column="student_no" jdbcType="VARCHAR" property="studentNo"/>
+    </resultMap>
+
+
+    <insert id="addSign" parameterType="com.hui.model.entity.Sign">
+        INSERT INTO si_sign_record (
+            student_no,
+            course_no,
+            sign_time,
+            create_by,
+            create_time,
+            update_by,
+            update_time
+        ) VALUES(
+            #{studentNo, jdbcType = VARCHAR},
+            #{courseNo, jdbcType = VARCHAR},
+            #{signTime, jdbcType=TIMESTAMP},
+            #{createBy, jdbcType = VARCHAR},
+            #{createTime, jdbcType = TIMESTAMP},
+            #{updateBy, jdbcType = VARCHAR},
+            #{updateTime, jdbcType = TIMESTAMP}
+        )
+
+    </insert>
+
+    <select id="querySignPage" parameterType="com.hui.model.form.SignForm" resultMap="signRecordMap">
+        SELECT
+            sr.course_no,
+            sr.sign_time
+        FROM
+            si_sign_record sr
+        WHERE
+        1 = 1
+        <if test="studentNo != null and studentNo != ''">
+            AND sr.student_no = #{studentNo,jdbcType=VARCHAR}
+        </if>
+
+        <if test="startTime != null and endTime!=null">
+            AND sr.sign_time BETWEEN #{startTime,jdbcType=TIMESTAMP} AND #{endTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="courseNo != null and courseNo!=''">
+            AND sr.course_no = #{courseNo,jdbcType=VARCHAR}
+        </if>
+        LIMIT #{pageIndex,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+    </select>
+
+    <select id="querySignPageCount" parameterType="com.hui.model.form.SignForm" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+        si_sign_record sr
+        WHERE
+        sr.student_no = #{studentNo,jdbcType=VARCHAR}
+        <if test="startTime != null and endTime!=null">
+            AND sr.sign_time BETWEEN DATE("")AND DATE(expr)
+        </if>
+        <if test="startTime != null and startTime!=''">
+            AND sr.course_no = #{courseNo,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+
+
+
+
+
+
+
+</mapper>
