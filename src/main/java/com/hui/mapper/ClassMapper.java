@@ -29,7 +29,7 @@ public interface ClassMapper {
 
     /**
      * 查询班级信息
-     * @param classNo
+     * @param classAndGrade
      * @return
      */
     ClassAndGrade queryClass(ClassAndGrade classAndGrade);
